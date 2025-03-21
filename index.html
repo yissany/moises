@@ -25,8 +25,25 @@
         loader.load('Moises.glb', function(gltf) {
             const model = gltf.scene;
             scene.add(model);
-            model.position.set(0, -1, 0); // Ajustar posición
+           // model.position.set(0, -1, 0);  Ajustar posición
+            model.position.set(0, 0, -2);  // Coloca a Moisés más cerca de la cámara
+            camera.position.set(0, 0, 2);  // Ajusta la cámara
         });
+
+
+        
+        navigator.mediaDevices.getUserMedia({ video: true })
+          .then(function(stream) {
+              let video = document.createElement('video');
+              video.srcObject = stream;
+              video.play();
+              document.body.appendChild(video);
+          })
+      .catch(function(err) {
+          console.log("Error al acceder a la cámara: " + err);
+      });
+
+        
 
         // Configurar luz
         const light = new THREE.AmbientLight(0xffffff, 1);
