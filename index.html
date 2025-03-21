@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,14 +13,14 @@
   </div>
   <script>
     // Cargar el marcador
-    const markerUrl = 'data/marcador.png';
+    const markerUrl = './marcador.png'; // Cambia la ruta del marcador
     const marker = new ARMarker(markerUrl);
 
     // Configurar la cámara
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
-    navigator.mediaDevices.getUserMedia({ video: true })
+    navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480, framerate: 30 } }) // Agrega configuración adicional de la cámara
       .then(stream => {
         video.srcObject = stream;
         video.play();
