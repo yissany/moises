@@ -1,18 +1,45 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
-  </head>
-  <body style="margin: 0; overflow: hidden;">
-    <a-scene embedded arjs>
-      <a-entity 
-        gltf-model="https://drive.google.com/uc?export=download&id=1DoLStcEpY6OcdsRhyGA0MPjSt_pH5GYD" 
-        position="0 0 -3" 
-        scale="0.5 0.5 0.5">
-      </a-entity>
-      <a-camera position="0 0 0"></a-camera>
-    </a-scene>
-  </body>
-</html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moises en 3D</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script>
+        // Crear la escena
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
 
+        // Cargar el modelo GLB
+        const loader = new THREE.GLTFLoader();
+        loader.load('Moises.glb', function(gltf) {
+            const model = gltf.scene;
+            scene.add(model);
+            model.position.set(0, -1, 0); // Ajustar posición
+        });
+
+        // Configurar luz
+        const light = new THREE.AmbientLight(0xffffff, 1);
+        scene.add(light);
+
+        camera.position.z = 5;
+
+        // Animación
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
