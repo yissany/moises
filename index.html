@@ -21,7 +21,16 @@
         renderer.setClearColor(0x000000, 0); // Fondo transparente
         document.body.appendChild(renderer.domElement);
 
-        // Cargar el modelo GLB
+        // Cargar fondo de la orquesta
+        const texture = new THREE.TextureLoader().load('fondo_orquesta.jpg');  // Aquí pones la ruta a la imagen del fondo
+        const background = new THREE.Mesh(
+            new THREE.PlaneGeometry(100, 100),
+            new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
+        );
+        background.position.z = -10;  // Coloca el fondo detrás de Moisés
+        scene.add(background);
+
+        // Cargar el modelo GLB de Moisés
         const loader = new THREE.GLTFLoader();
         loader.load('Moises.glb', function(gltf) {
             const model = gltf.scene;
