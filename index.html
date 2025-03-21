@@ -16,8 +16,9 @@
         // Crear la escena
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
+        const renderer = new THREE.WebGLRenderer({ alpha: true });  // Habilitar fondo transparente
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 0); // Fondo transparente
         document.body.appendChild(renderer.domElement);
 
         // Cargar el modelo GLB
@@ -26,6 +27,14 @@
             const model = gltf.scene;
             scene.add(model);
             model.position.set(0, -1, 0); // Ajustar posición
+
+            // Hacer transparente el modelo si es necesario
+            model.traverse((node) => {
+                if (node.isMesh) {
+                    node.material.transparent = true;
+                    node.material.opacity = 1;  // Asegurar que la opacidad sea completa
+                }
+            });
         });
 
         // Configurar luz
@@ -43,4 +52,3 @@
     </script>
 </body>
 </html>
-
