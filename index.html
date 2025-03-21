@@ -1,62 +1,80 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moises en 3D</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <style>
-        body { margin: 0; }
-        canvas { display: block; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moises en 3D</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/threex.ar@2.2.0/dist/threex.ar.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
 </head>
 <body>
-    <script>
-        // Crear la escena
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
+  <script>
+    // Crear la escena
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
-        // Cargar el modelo GLB
-        const loader = new THREE.GLTFLoader();
-        loader.load('Moises.glb', function(gltf) {
-            const model = gltf.scene;
-            scene.add(model);
-           // model.position.set(0, -1, 0);  Ajustar posición
-            model.position.set(0, 0, -2);  // Coloca a Moisés más cerca de la cámara
-            camera.position.set(0, 0, 2);  // Ajusta la cámara
-        });
-
-
-        
-        navigator.mediaDevices.getUserMedia({ video: true })
-          .then(function(stream) {
-              let video = document.createElement('video');
-              video.srcObject = stream;
-              video.play();
-              document.body.appendChild(video);
-          })
+    // Integrar la cámara con la escena
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(function(stream) {
+        let video = document.createElement('video');
+        video.srcObject = stream;
+        video.play();
+        scene.background = new THREE.VideoTexture(video);
+      })
       .catch(function(err) {
-          console.log("Error al acceder a la cámara: " + err);
+        console.log("Error al acceder a la cámara: " + err);
       });
 
-        
+    // Utilizar AR.js
+    const arToolkitSource = new THREEx.ArToolkitSource({
+      sourceType: 'webcam',
+    });
+    const arToolkitContext = new THREEx.ArToolkitContext({
+      cameraParametersUrl: 'data/camera_para.dat',
+      detectionMode: 'mono',
+    });
+    const markerRoot = new THREE.Group();
+    scene.add(markerRoot);
 
-        // Configurar luz
-        const light = new THREE.AmbientLight(0xffffff, 1);
-        scene.add(light);
+    // Cargar el modelo GLB
+    const loader = new THREE.GLTFLoader();
+    loader.load('Moises.glb', function(gltf) {
+      const model = gltf.scene;
+      model.position.set(0, 0, -2);
+      model.rotation.set(0, 0, 0);
+      model.scale.set(0.5, 0.5, 0.5); // Ajustar el tamaño del modelo
 
-        camera.position.z = 5;
+      // Agregar el modelo al grupo markerRoot
+      markerRoot.add(model);
+    });
 
-        // Animación
-        function animate() {
-            requestAnimationFrame(animate);
-            renderer.render(scene, camera);
-        }
-        animate();
-    </script>
+    // Ajustar la posición y la orientación del modelo
+    const markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
+      type: 'pattern',
+      patternUrl: 'hide.png',
+    });
+    markerControls.addEventListener('markerFound', () => {
+      // No es necesario agregar el modelo aquí, ya que se agregó anteriormente
+    });
+
+    // Animación
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
 </body>
 </html>
